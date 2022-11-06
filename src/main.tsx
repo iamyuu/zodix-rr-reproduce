@@ -1,8 +1,15 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider, Form, useNavigation, type ActionFunctionArgs } from 'react-router-dom';
+import {
+	createBrowserRouter,
+	RouterProvider,
+	Form,
+	useNavigation,
+	useActionData,
+	type ActionFunctionArgs,
+} from 'react-router-dom';
 import { z } from 'zod';
-import { zx } from 'zodix';
+import { parseForm } from './zodix';
 
 const schema = z.object({
 	name: z.string(),
@@ -16,22 +23,25 @@ function save(formData: z.infer<typeof schema>) {
 async function action({ request }: ActionFunctionArgs) {
 	try {
 		// ✅ This works
-		// const formData = await zx.parseForm(request, {
+		// const formData = await parseForm(request, {
 		// 	name: z.string(),
 		// 	email: z.string().email(),
 		// });
 
 		// ❌ This doesn't work
-		const formData = await zx.parseForm(request, schema);
+		const formData = await parseForm(request, schema);
 
-		await save(formData);
+		save(formData);
+
+		return formData;
 	} catch (error) {
-		console.debug(`🚀 ~ action ~ error`, error);
+		return error;
 	}
 }
 
 function App() {
 	const navigation = useNavigation();
+	const actionData = useActionData();
 
 	return (
 		<Form method='post' action='/' style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -50,6 +60,8 @@ function App() {
 					Submit
 				</button>
 			</div>
+
+			<pre>{JSON.stringify(actionData, null, 2)}</pre>
 		</Form>
 	);
 }
