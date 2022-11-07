@@ -13,7 +13,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "6.4.3",
     "zod": "3.19.1",
-    "zodix": "0.2.0"
+    "zodix": "0.3.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.22",

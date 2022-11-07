@@ -9,7 +9,7 @@ import {
 	type ActionFunctionArgs,
 } from 'react-router-dom';
 import { z } from 'zod';
-import { parseForm } from './zodix';
+import { zx } from 'zodix';
 
 const schema = z.object({
 	name: z.string(),
@@ -22,14 +22,7 @@ function save(formData: z.infer<typeof schema>) {
 
 async function action({ request }: ActionFunctionArgs) {
 	try {
-		// ✅ This works
-		// const formData = await parseForm(request, {
-		// 	name: z.string(),
-		// 	email: z.string().email(),
-		// });
-
-		// ❌ This doesn't work
-		const formData = await parseForm(request, schema);
+		const formData = await zx.parseForm(request, schema);
 
 		save(formData);
 
