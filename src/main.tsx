@@ -22,11 +22,17 @@ function save(formData: z.infer<typeof schema>) {
 
 async function action({ request }: ActionFunctionArgs) {
 	try {
-		const formData = await zx.parseForm(request, schema);
+		const result = await zx.parseFormSafe(request, schema);
+		console.debug(`🚀 ~ action ~ result`, result);
 
-		save(formData);
+		if (result.success) {
+			const formData = result.data;
 
-		return formData;
+			save(formData);
+			return formData;
+		}
+
+		return result.error;
 	} catch (error) {
 		return error;
 	}
@@ -35,6 +41,7 @@ async function action({ request }: ActionFunctionArgs) {
 function App() {
 	const navigation = useNavigation();
 	const actionData = useActionData();
+	console.debug(`🚀 ~ App ~ actionData`, actionData);
 
 	return (
 		<Form method='post' action='/' style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
